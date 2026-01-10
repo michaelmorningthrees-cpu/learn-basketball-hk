@@ -13,6 +13,19 @@ import {
   Plus
 } from 'lucide-react';
 
+// Google Ads gtag 类型声明
+declare global {
+  interface Window {
+    gtag?: (
+      command: 'event' | 'config' | 'set',
+      eventNameOrTargetId: string,
+      eventParameters?: {
+        [key: string]: string | number | boolean | undefined;
+      }
+    ) => void;
+  }
+}
+
 interface Coach {
   id: string;
   name: string;
@@ -92,6 +105,27 @@ export default function CoachesPage() {
   
   // 篩選邏輯（視覺佔位，暫時不過濾）
   const filteredCoaches = coaches;
+
+  // 處理社交媒體圖標點擊
+  const handleSocialClick = (e: React.MouseEvent, coachName: string, platform: string) => {
+    // 触发 Google Ads 事件追踪
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'coach_social_click', {
+        'coach_name': coachName,
+        'platform': platform
+      });
+    }
+    // 不阻止默认行为，让链接正常跳转
+  };
+
+  // 處理聯絡我們按鈕點擊
+  const handleContactInquiry = (e: React.MouseEvent) => {
+    // 触发 Google Ads 事件追踪
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'contact_inquiry');
+    }
+    // 不阻止默认行为，让邮件链接正常打开
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -223,7 +257,10 @@ export default function CoachesPage() {
                       href={coach.ig}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSocialClick(e, coach.nameCn || coach.name, 'Instagram');
+                      }}
                       className="w-9 h-9 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg hover:shadow-purple-500/50"
                       aria-label="Instagram"
                     >
@@ -235,7 +272,10 @@ export default function CoachesPage() {
                       href={coach.facebook}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSocialClick(e, coach.nameCn || coach.name, 'Facebook');
+                      }}
                       className="w-9 h-9 bg-[#1877F2] rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg hover:shadow-blue-500/50"
                       aria-label="Facebook"
                     >
@@ -247,7 +287,10 @@ export default function CoachesPage() {
                       href={coach.youtube}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSocialClick(e, coach.nameCn || coach.name, 'YouTube');
+                      }}
                       className="w-9 h-9 bg-[#FF0000] rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg hover:shadow-red-500/50"
                       aria-label="YouTube"
                     >
@@ -286,6 +329,7 @@ export default function CoachesPage() {
             </p>
             <a
               href="mailto:michaelmorningthrees@gmail.com?subject=教練加盟申請 - LearnBasketballHK"
+              onClick={handleContactInquiry}
               className="inline-flex items-center gap-2 bg-[#FF8C00] hover:bg-[#FF9500] text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:shadow-orange-500/50"
             >
               聯絡我們

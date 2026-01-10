@@ -4,6 +4,19 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronRight, Zap, Flame, Sword, Target, TrendingUp, Layers, ArrowRight, PlayCircle, Move, X } from 'lucide-react';
 
+// Google Ads gtag 类型声明
+declare global {
+  interface Window {
+    gtag?: (
+      command: 'event' | 'config' | 'set',
+      eventNameOrTargetId: string,
+      eventParameters?: {
+        [key: string]: string | number | boolean | undefined;
+      }
+    ) => void;
+  }
+}
+
 interface OffenseCategory {
   id: string;
   name: string;
@@ -66,9 +79,35 @@ const offenseCards: OffenseCard[] = [
 export default function OffensePage() {
   const [showModal, setShowModal] = useState(false);
 
-  const handleStartTactic = (e: React.MouseEvent) => {
+  const handleStartTactic = (e: React.MouseEvent, offenseName: string) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // 触发 Google Ads 事件追踪
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_offense_start', {
+        'offense_name': offenseName,
+        'category': 'offense'
+      });
+    }
+    
+    // 显示弹窗
+    setShowModal(true);
+  };
+
+  const handleSidebarClick = (e: React.MouseEvent, linkName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // 触发 Google Ads 事件追踪
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_offense_sidebar', {
+        'link_name': linkName,
+        'category': 'offense_navigation'
+      });
+    }
+    
+    // 显示弹窗
     setShowModal(true);
   };
 
@@ -163,7 +202,7 @@ export default function OffensePage() {
                         {/* 右下角按鈕 - 橙色按鈕 */}
                         <div className="flex justify-end">
                           <button
-                            onClick={handleStartTactic}
+                            onClick={(e) => handleStartTactic(e, card.title)}
                             className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF8C00] hover:bg-[#FF9500] text-white font-medium text-sm rounded-lg transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(255,140,0,0.5)] group-hover:scale-105 cursor-pointer"
                           >
                             啟動戰術
@@ -198,9 +237,9 @@ export default function OffensePage() {
                     return (
                       <button
                         key={category.id}
-                        onClick={handleStartTactic}
+                        onClick={(e) => handleSidebarClick(e, category.name)}
                         className={`
-                          w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all duration-200 text-left
+                          w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all duration-200 text-left cursor-pointer
                           ${
                             isActive
                               ? 'bg-[#FF8C00]/20 text-[#FF8C00] font-medium border border-[#FF8C00]/40 shadow-[0_0_15px_rgba(255,140,0,0.2)]'

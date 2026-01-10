@@ -4,6 +4,19 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronRight, ShieldCheck, Lock, Target, Users, Layers, Zap, ArrowRight, TrendingUp, X } from 'lucide-react';
 
+// Google Ads gtag 类型声明
+declare global {
+  interface Window {
+    gtag?: (
+      command: 'event' | 'config' | 'set',
+      eventNameOrTargetId: string,
+      eventParameters?: {
+        [key: string]: string | number | boolean | undefined;
+      }
+    ) => void;
+  }
+}
+
 interface DefenseCategory {
   id: string;
   name: string;
@@ -59,13 +72,39 @@ export default function DefensePage() {
   const [showModal, setShowModal] = useState(false);
   const [clickedCategory, setClickedCategory] = useState<string | null>(null);
 
-  const handleBreakDefense = (e: React.MouseEvent, categoryId?: string) => {
+  const handleBreakDefense = (e: React.MouseEvent, defenseName: string) => {
     e.preventDefault();
     e.stopPropagation();
-    if (categoryId) {
-      setClickedCategory(categoryId);
-      setTimeout(() => setClickedCategory(null), 200); // 重置點擊狀態
+    
+    // 触发 Google Ads 事件追踪
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_defense_breakdown', {
+        'defense_name': defenseName,
+        'category': 'defense'
+      });
     }
+    
+    // 显示弹窗
+    setShowModal(true);
+  };
+
+  const handleSidebarClick = (e: React.MouseEvent, linkName: string, categoryId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // 触发 Google Ads 事件追踪
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_defense_sidebar', {
+        'link_name': linkName,
+        'category': 'defense_navigation'
+      });
+    }
+    
+    // 点击反馈效果
+    setClickedCategory(categoryId);
+    setTimeout(() => setClickedCategory(null), 200); // 重置點擊狀態
+    
+    // 显示弹窗
     setShowModal(true);
   };
 
@@ -160,7 +199,7 @@ export default function DefensePage() {
                         {/* 右下角按鈕 - 橙色按鈕 */}
                         <div className="flex justify-end">
                           <button
-                            onClick={(e) => handleBreakDefense(e)}
+                            onClick={(e) => handleBreakDefense(e, card.title)}
                             className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF8C00] hover:bg-[#FF9500] active:bg-[#FF8500] text-white font-medium text-sm rounded-lg transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(255,140,0,0.4)] cursor-pointer active:scale-95"
                           >
                             解構防線
@@ -186,7 +225,7 @@ export default function DefensePage() {
             <div className="sticky top-24">
               <div className="bg-slate-900 rounded-xl border border-slate-800 p-4">
                 <h2 className="text-lg font-bold text-white mb-4 pb-3 border-b border-slate-800">
-                  籃球防守分類
+                  防守類別導航
                 </h2>
                 
                 <div className="space-y-2">
@@ -196,9 +235,9 @@ export default function DefensePage() {
                     return (
                       <button
                         key={category.id}
-                        onClick={(e) => handleBreakDefense(e, category.id)}
+                        onClick={(e) => handleSidebarClick(e, category.name, category.id)}
                         className={`
-                          w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all duration-200 text-left
+                          w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all duration-200 text-left cursor-pointer
                           ${
                             isActive
                               ? 'bg-[#FF8C00]/20 text-[#FF8C00] font-medium border border-[#FF8C00]/40 shadow-[0_0_15px_rgba(255,140,0,0.2)]'

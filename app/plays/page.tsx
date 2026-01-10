@@ -4,6 +4,19 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronRight, Zap, Target, TrendingUp, Box, ArrowLeftRight, Check, PlayCircle, Layout, ArrowRight, Move, Repeat, X } from 'lucide-react';
 
+// Google Ads gtag 类型声明
+declare global {
+  interface Window {
+    gtag?: (
+      command: 'event' | 'config' | 'set',
+      eventNameOrTargetId: string,
+      eventParameters?: {
+        [key: string]: string | number | boolean | undefined;
+      }
+    ) => void;
+  }
+}
+
 interface TacticItem {
   id: string;
   name: string;
@@ -90,9 +103,35 @@ const tacticCards: TacticCard[] = [
 export default function PlaysPage() {
   const [showModal, setShowModal] = useState(false);
 
-  const handleReadMore = (e: React.MouseEvent) => {
+  const handleReadMore = (e: React.MouseEvent, playName: string) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // 触发 Google Ads 事件追踪
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_play_detail', {
+        'play_name': playName,
+        'category': 'plays'
+      });
+    }
+    
+    // 显示弹窗
+    setShowModal(true);
+  };
+
+  const handleSidebarClick = (e: React.MouseEvent, linkName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // 触发 Google Ads 事件追踪
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'click_plays_sidebar', {
+        'link_name': linkName,
+        'category': 'plays_navigation'
+      });
+    }
+    
+    // 显示弹窗
     setShowModal(true);
   };
 
@@ -187,7 +226,7 @@ export default function PlaysPage() {
                           {/* 右下角按鈕 - 橙色空心按鈕 */}
                           <div className="flex justify-end mt-auto">
                             <button
-                              onClick={handleReadMore}
+                              onClick={(e) => handleReadMore(e, card.title)}
                               className="inline-flex items-center gap-2 px-4 py-2 border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white font-medium text-sm rounded-lg transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(255,140,0,0.3)] cursor-pointer"
                             >
                               閱讀詳情
@@ -224,11 +263,11 @@ export default function PlaysPage() {
                     const isActive = false; // 列表頁面沒有激活狀態
                     
                     return (
-                      <Link
+                      <button
                         key={tactic.id}
-                        href={tactic.href}
+                        onClick={(e) => handleSidebarClick(e, tactic.name)}
                         className={`
-                          flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all duration-200
+                          w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all duration-200 text-left cursor-pointer
                           ${
                             isActive
                               ? 'bg-[#FF8C00]/20 text-[#FF8C00] font-medium border border-[#FF8C00]/40 shadow-[0_0_15px_rgba(255,140,0,0.2)]'
@@ -245,7 +284,7 @@ export default function PlaysPage() {
                         {hasCard && (
                           <Check className="w-3 h-3 text-green-400" />
                         )}
-                      </Link>
+                      </button>
                     );
                   })}
                 </div>
