@@ -153,38 +153,20 @@ export default function Home() {
 
       <div className="relative z-10">
         {/* Hero Section */}
-        <section className="container mx-auto px-4 py-16 md:py-24 max-w-7xl">
-          <div className="text-center max-w-4xl mx-auto mb-16">
+        <section className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
+          <div className="text-center max-w-4xl mx-auto mb-8">
             {/* 主標題 */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-[#FF8C00] via-[#FFA500] to-[#FF8C00] bg-clip-text text-transparent leading-tight">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-3 bg-gradient-to-r from-[#FF8C00] via-[#FFA500] to-[#FF8C00] bg-clip-text text-transparent leading-tight">
               香港專業籃球訓練平台
             </h1>
-            <p className="text-xl md:text-2xl text-slate-400 mb-2 font-medium">
+            <p className="text-xl md:text-2xl text-slate-400 mb-3 font-medium">
               Learn Basketball HK
             </p>
 
             {/* 副標題 */}
-            <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto">
               由甲一級名師及技術開發導師引路，全方位提升球技與戰術意識
             </p>
-
-            {/* CTA 按鈕 */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href="/coaches"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF8C00] to-[#FF9500] hover:from-[#FF9500] hover:to-[#FFA500] text-white font-semibold text-lg px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-orange-500/50 hover:scale-105 group"
-              >
-                立即搵教練
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                href="/plays"
-                className="inline-flex items-center gap-2 border-2 border-[#FF8C00] text-[#FF8C00] hover:bg-[#FF8C00] hover:text-white font-semibold text-lg px-8 py-4 rounded-lg transition-all duration-300 group"
-              >
-                查看戰術圖解
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
           </div>
 
           {/* 專業教練牆 */}
